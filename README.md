@@ -1,87 +1,28 @@
-# Welcome to React Router!
+# React Router Example of using Middleware with ShouldRevalidate
 
-A modern, production-ready template for building full-stack React applications using React Router.
+This example demonstrates how to use the new middleware feature along with the `shouldRevalidate` function in React Router.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+The route `routes/_.tsx` has a middleware that takes 500ms to run. A loader that takes another 500ms to run and returns the current date.
 
-## Features
+Additionally, it exports a `shouldRevalidate` function that returns `false` all the time, so the loader will never run again unless the user reloads the page.
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+The route `routes/_.$id.tsx` has a loader that takes 100ms and returns the `params.id` and that id plus one. This renders the ID value, and a link to the next ID (`id + 1`), and a loading indicator when a navigation is in progress.
 
-## Getting Started
-
-### Installation
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
+When going to the `/1` URL the server terminal logs:
 
 ```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+middleware: _
+loader: _
+loader: _.$id
 ```
 
-## Styling
+Meaning the middleware ran, then both loaders ran.
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+When going to the `/2` URL, by clicking the link, the server terminal logs:
 
----
+```
+middleware: _
+loader: _.$id
+```
 
-Built with ❤️ using React Router.
+Meaning the middleware ran, but the loader for `_` did not run again because `shouldRevalidate` returned `false`.
